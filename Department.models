@@ -1,0 +1,15 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace STUDENTINFORMATIONN.Models
+{
+    public class Department
+    {
+		public int Id { get; set; }
+
+		[Required]
+		[StringLength(100)]
+		public required string DepartmentName { get; set; }
+		public required List<Course> Courses { get; set; }
+		public required List<Instructor> Instructors { get; set; }
+	}
+}
