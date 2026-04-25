@@ -1,37 +1,107 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using STUDENTINFORMATIONN.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace STUDENTINFORMATIONN.Controllers
 {
-    public class HomeController : Controller
-    {
-        private readonly ILogger<HomeController> _logger;
+	public class StudentController : Controller
+	{
+		private static List<Student> students = new List<Student>
+		{
+			new Student { Id = 1, Name = "John Doe", Age = 20, Course = "IT" },
+			new Student { Id = 2, Name = "Jane Smith", Age = 21, Course = "CS" }
+		};
 
-        public HomeController(ILogger<HomeController> logger)
-        {
-            _logger = logger;
-        }
+		// GET: /Student
+		public IActionResult Index()
+		{
+			return View(students);
+		}
 
-        public IActionResult Index()
-        {
-            return View();
-        }
+		// GET: /Student/Details/1
+		public IActionResult Details(int id)
+		{
+			var student = students.FirstOrDefault(s => s.Id == id);
+			if (student == null) return NotFound();
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+			return View(student);
+		}
+
+		// GET: /Student/Create
+		public IActionResult Create()
+		{
+			return View();
+		}
+
+		// POST: /Student/Create
+		[HttpPost]
+		public IActionResult Create(Student student)
+		{
+			if (ModelState.IsValid)
+			{
+				student.Id = students.Max(s => s.Id) + 1;
+				students.Add(student);
+				return RedirectToAction("Index");
+			}
+			return View(student);
+		}
+
+		// GET: /Student/Edit/1
+		public IActionResult Edit(int id)
+		{
+			var student = students.FirstOrDefault(s => s.Id == id);
+			if (student == null) return NotFound();
+
+			return View(student);
+		}
+
+		// POST: /Student/Edit/1
+		[HttpPost]
+		public IActionResult Edit(Student updatedStudent)
+		{
+			var student = students.FirstOrDefault(s => s.Id == updatedStudent.Id);
+			if (student == null) return NotFound();
+
+			student.Name = updatedStudent.Name;
+			student.Age = updatedStudent.Age;
+			student.Course = updatedStudent.Course;
+
+			return RedirectToAction("Index");
+		}
+
+		// GET: /Student/Delete/1
+		public IActionResult Delete(int id)
+		{
+			var student = students.FirstOrDefault(s => s.Id == id);
+			if (student == null) return NotFound();
+
+			return View(student);
+		}
+
+		// POST: /Student/Delete/1
+		[HttpPost, ActionName("Delete")]
+		public IActionResult DeleteConfirmed(int id)
+		{
+			var student = students.FirstOrDefault(s => s.Id == id);
+			if (student != null)
+			{
+				students.Remove(student);
+			}
+
+			return RedirectToAction("Index");
+		}
 
 		public IActionResult StudentInfo()
 		{
 			return View();
 		}
+	}
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-    }
+	public class Student
+	{
+		public int Id { get; set; }
+		public string Name { get; set; }
+		public int Age { get; set; }
+		public string Course { get; set; }
+	}
 }
